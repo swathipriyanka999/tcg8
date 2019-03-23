@@ -1,0 +1,26 @@
+```{r}
+library(rvest)
+library(stringr)   
+library(cluster)
+library(ggplot2)
+url <- read_html("http://carsalesbase.com/china-car-sales-data/ford/")
+carmodel <-html_table(url,header=TRUE)[[2]]
+colnames(carmodel)[1] <-"Year"
+df<-data.frame(carmodel)
+df
+ggplot(df, aes(x= Year, y=Ford..All.Models,color=Year))+geom_point(shape=1)
+set.seed(123)
+irisCluster <- kmeans(df[, 1:2], 3, nstart = 20)
+irisCluster
+
+centers=as.data.frame(irisCluster$centers)
+
+table(irisCluster$cluster,df$Year)
+
+irisCluster$cluster< as.factor(irisCluster$cluster)
+
+
+ggplot(df,aes(Year,Ford..All.Models,color=irisCluster$cluster))+geom_point(data=centers,aes(x=Year,y=Ford..All.Models,color='diff'),shape=4)+geom_point(data=centers,aes(x=Year,y=Ford..All.Models,color='diff'),size=52,alpha=0.5,legend=FALSE)
+
+```
+
